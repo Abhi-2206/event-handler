@@ -1,4 +1,6 @@
 const express = require('express')
+const crypto = require("node:crypto");
+const { describe } = require('node:test');
 
 const app = express()
 
@@ -14,9 +16,33 @@ let events = [
     description:"this is a blood donation camp"
   }
 ];
+app.use(express.json())
 
 app.get("/events", (req, res) => {
   res.json(events)
+})
+
+app.post("/events", (req, res) => {
+  const body = req.body;
+
+  if (!body.title) {
+    res.status(400).json({ message: "Title is require" })
+
+  }
+
+  if (!body.description) {
+    res.status(400).json({message:"Description is require"})
+  }
+
+  const newEvent = {
+    id: crypto.randomUUID(),
+    title: body.title,
+    description:body.description
+  }
+
+  events.push(newEvent)
+  res.status(201).json(newEvent)
+
 })
 
 app.delete("/events/:id", (req, res) => {
