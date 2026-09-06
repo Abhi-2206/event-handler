@@ -1,6 +1,6 @@
 const express = require('express')
 const crypto = require("node:crypto");
-const { describe } = require('node:test');
+
 
 const app = express()
 
@@ -43,6 +43,26 @@ app.post("/events", (req, res) => {
   events.push(newEvent)
   res.status(201).json(newEvent)
 
+})
+
+app.patch("/events/:id", (req, res) => {
+  const body = req.body;
+  const id = req.params.id
+
+  const index = events.findIndex(events => events.id === id)
+
+  if (index === -1) {
+    res.status(404).json({message:"event does not exists"})
+  }
+
+  events[index] = {
+    id: events[index].id,
+    title:
+      body.title || events[index].title,
+    description:body.description || events[index].description
+  }
+
+  res.json(events[index])
 })
 
 app.delete("/events/:id", (req, res) => {
